@@ -1,0 +1,171 @@
+---
+import type { Category } from "@/types/strapi";
+
+interface Props {
+  categories: Category[];
+}
+
+const { categories } = Astro.props;
+
+// Mapa de iconos y colores por categoría (fallbacks para las que no estén)
+const catConfig: Record<string, { icon: string; color: string; bg: string }> = {
+  smartphones: { icon: "📱", color: "#6ee7b7", bg: "rgba(16, 185, 129, 0.1)" },
+  laptops: { icon: "💻", color: "#93c5fd", bg: "rgba(59, 130, 246, 0.1)" },
+  audio: { icon: "🎧", color: "#c4b5fd", bg: "rgba(139, 92, 246, 0.1)" },
+  accesorios: { icon: "⌨️", color: "#fcd34d", bg: "rgba(245, 158, 11, 0.1)" },
+  wearables: { icon: "⌚", color: "#f9a8d4", bg: "rgba(236, 72, 153, 0.1)" },
+  "hogar-inteligente": {
+    icon: "🏠",
+    color: "#6ee7b7",
+    bg: "rgba(20, 184, 166, 0.1)",
+  },
+  gaming: { icon: "🎮", color: "#fca5a5", bg: "rgba(239, 68, 68, 0.1)" },
+};
+const defaultConfig = {
+  icon: "📦",
+  color: "#a78bfa",
+  bg: "rgba(124, 58, 237, 0.1)",
+};
+---
+
+<section class="catbanner">
+  <div class="container">
+    <div class="catbanner__header">
+      <h2 class="catbanner__title">Buscar por categorías</h2>
+      <a href="/categorias" class="catbanner__ver-todas">Ver todas →</a>
+    </div>
+    <div class="catbanner__grid">
+      {
+        categories.map((cat) => {
+          const cfg = catConfig[cat.slug] ?? defaultConfig;
+          return (
+            <a
+              href={`/categorias/${cat.slug}`}
+              class="catcard"
+              style={`--cat-color:${cfg.color};--cat-bg:${cfg.bg}`}
+            >
+              <span class="catcard__icon">{cfg.icon}</span>
+              <span class="catcard__name">{cat.nombre}</span>
+              <span class="catcard__arrow">→</span>
+            </a>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .catbanner {
+    padding: 3rem 0;
+  }
+
+  .catbanner__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 2.5rem;
+    text-align: center;
+  }
+
+  .catbanner__title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .catbanner__ver-todas {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-light);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .catbanner__ver-todas:hover {
+    opacity: 0.7;
+  }
+
+  .catbanner__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .catcard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 1.5rem 1rem;
+    background: var(--cat-bg, var(--surface));
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    position: relative;
+    transition:
+      transform var(--transition),
+      box-shadow var(--transition),
+      border-color var(--transition);
+    overflow: hidden;
+  }
+
+  .catcard::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--cat-bg, rgba(124, 58, 237, 0.05));
+    opacity: 0;
+    transition: opacity var(--transition);
+  }
+
+  .catcard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+    border-color: var(--cat-color, var(--primary-light));
+  }
+
+  .catcard:hover::before {
+    opacity: 1;
+  }
+
+  .catcard__icon {
+    font-size: 2rem;
+    line-height: 1;
+    position: relative;
+    z-index: 1;
+  }
+
+  .catcard__name {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--cat-color, var(--text));
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    line-height: 1.3;
+  }
+
+  .catcard__arrow {
+    font-size: 0.75rem;
+    color: var(--cat-color, var(--text-muted));
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: all var(--transition);
+    position: relative;
+    z-index: 1;
+  }
+
+  .catcard:hover .catcard__arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  @media (max-width: 600px) {
+    .catbanner__grid {
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 0.75rem;
+    }
+  }
+</style>

@@ -1,0 +1,85 @@
+---
+import MainLayout from "@/layouts/MainLayout.astro";
+---
+
+<MainLayout
+  title="¡Gracias por tu compra! — MiTienda"
+  description="Tu pedido ha sido recibido con éxito."
+>
+  <section class="thanks-section">
+    <div class="container thanks-container">
+      <div class="thanks-card">
+        <div class="thanks-icon">🎉</div>
+        <h1 class="thanks-title">¡Pedido Recibido!</h1>
+        <p class="thanks-desc">
+          Muchas gracias por tu compra. Hemos recibido tu pedido correctamente.
+          Si elegiste pagar por WhatsApp, en breve se abrirá el chat para
+          finalizar la coordinación.
+        </p>
+        <div class="thanks-actions">
+          <a href="/productos" class="btn btn--primary">Seguir comprando</a>
+          <a href="/" class="btn btn--ghost">Volver al inicio</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .thanks-section {
+    min-height: 70vh;
+    display: grid;
+    place-items: center;
+    padding: 4rem 0;
+  }
+
+  .thanks-card {
+    text-align: center;
+    background: var(--surface);
+    padding: 4rem 2rem;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    max-width: 600px;
+    width: 100%;
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  .thanks-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .thanks-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #6366f1, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .thanks-desc {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+  }
+
+  .thanks-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

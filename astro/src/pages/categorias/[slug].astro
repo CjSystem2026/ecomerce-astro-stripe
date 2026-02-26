@@ -1,0 +1,98 @@
+---
+export const prerender = false;
+
+import MainLayout from "@/layouts/MainLayout.astro";
+import ProductCard from "@/components/ProductCard.astro";
+import { getCategoryBySlug, getProducts } from "@/lib/strapi";
+
+const { slug } = Astro.params;
+const category = await getCategoryBySlug(slug!);
+
+if (!category) {
+  return Astro.redirect("/404");
+}
+
+const { data: products } = await getProducts({ categoria: slug });
+---
+
+<MainLayout
+  title={`${category.nombre} — MiTienda`}
+  description={`Explora todos nuestros productos en la categoría ${category.nombre}.`}
+>
+  <section class="section">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Ruta de navegación">
+        <a href="/">Inicio</a>
+        <span>/</span>
+        <a href="/categorias">Categorías</a>
+        <span>/</span>
+        <span aria-current="page">{category.nombre}</span>
+      </nav>
+
+      <div class="page-header">
+        <h1 class="section-title">{category.nombre}</h1>
+        <p class="page-header__count">
+          {products.length} productos disponibles
+        </p>
+      </div>
+
+      {
+        products.length > 0 ? (
+          <div class="products-grid">
+            {products.map((product) => (
+              <ProductCard product={product} />
+            ))}
+          </div>
+        ) : (
+          <div class="empty-state">
+            <p>Aún no hay productos en esta categoría.</p>
+            <a href="/productos" class="btn btn--primary">
+              Ver todos los productos
+            </a>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .breadcrumb a {
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+  .breadcrumb a:hover {
+    color: var(--primary);
+  }
+  .breadcrumb span[aria-current] {
+    color: var(--text);
+  }
+
+  .page-header {
+    margin-bottom: 3rem;
+  }
+
+  .page-header__count {
+    color: var(--text-muted);
+    margin-top: -1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 6rem 2rem;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 20px;
+    color: var(--text-muted);
+  }
+</style>

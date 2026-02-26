@@ -1,0 +1,438 @@
+---
+import MainLayout from "@/layouts/MainLayout.astro";
+---
+
+<MainLayout
+  title="Finalizar Compra — MiTienda"
+  description="Ingresa tus datos para completar tu pedido."
+>
+  <section class="section">
+    <div class="container">
+      <h1 class="section-title">Finalizar Compra</h1>
+
+      <div class="checkout-layout">
+        <form class="checkout-form" id="checkout-form">
+          <div class="form-section">
+            <h2>Datos de Contacto</h2>
+            <div class="form-group">
+              <label for="email">Correo Electrónico</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                placeholder="tu@email.com"
+              />
+            </div>
+            <div class="form-group">
+              <label for="phone">Teléfono / WhatsApp</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                required
+                placeholder="999 999 999"
+              />
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h2>Datos de Envío</h2>
+            <div class="form-group">
+              <label for="name">Nombre Completo</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                required
+                placeholder="Juan Pérez"
+              />
+            </div>
+            <div class="form-group">
+              <label for="address">Dirección Exacta</label>
+              <input
+                type="text"
+                id="address"
+                name="address"
+                required
+                placeholder="Av. Siempre Viva 123"
+              />
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="city">Ciudad</label>
+                <input
+                  type="text"
+                  id="city"
+                  name="city"
+                  required
+                  placeholder="Lima"
+                />
+              </div>
+              <div class="form-group">
+                <label for="district">Distrito</label>
+                <input
+                  type="text"
+                  id="district"
+                  name="district"
+                  required
+                  placeholder="Miraflores"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h2>Método de Pago</h2>
+            <div class="payment-options">
+              <label class="payment-option">
+                <input type="radio" name="payment" value="whatsapp" checked />
+                <div class="payment-content">
+                  <span class="payment-icon">📱</span>
+                  <div class="payment-text">
+                    <strong>Pedido por WhatsApp</strong>
+                    <span>Paga al coordinar por chat</span>
+                  </div>
+                </div>
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="payment" value="transferencia" />
+                <div class="payment-content">
+                  <span class="payment-icon">🏦</span>
+                  <div class="payment-text">
+                    <strong>Transferencia Bancaria</strong>
+                    <span>Envíanos el comprobante</span>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn--primary btn--full btn--large">
+            Confirmar Pedido
+          </button>
+        </form>
+
+        <aside class="order-summary" id="order-summary">
+          <h2>Tu Pedido</h2>
+          <div id="summary-items" class="summary-items">
+            <!-- Cargado vía JS -->
+          </div>
+          <div class="summary-totals">
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="summary-subtotal">S/ 0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Envío</span>
+              <span>Gratis</span>
+            </div>
+            <div class="summary-total">
+              <span>Total</span>
+              <span id="summary-total">S/ 0.00</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</MainLayout>
+
+<script
+  is:inline
+  data-strapi-url={import.meta.env.PUBLIC_STRAPI_URL || "http://localhost:1337"}
+>
+  function renderCheckout() {
+    console.log("🚀 Iniciando render de Checkout...");
+    const strapiUrl =
+      document.currentScript?.getAttribute("data-strapi-url") ||
+      "http://localhost:1337";
+
+    // Elementos
+    const summaryItems = document.getElementById("summary-items");
+    const subtotalEl = document.getElementById("summary-subtotal");
+    const totalEl = document.getElementById("summary-total");
+    const form = document.getElementById("checkout-form");
+
+    if (!summaryItems || !subtotalEl || !totalEl) {
+      console.error("❌ No se encontraron los elementos del resumen.");
+      return;
+    }
+
+    // Datos
+    let cart = [];
+    try {
+      cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    } catch (e) {
+      console.error("❌ Error al parsear el carrito:", e);
+      localStorage.setItem("cart", "[]");
+    }
+
+    console.log("🛒 Items en carrito:", cart);
+
+    if (cart.length === 0) {
+      if (window.location.pathname.includes("/checkout")) {
+        window.location.href = "/carrito";
+      }
+      return;
+    }
+
+    // Renderizado de items
+    let total = 0;
+    const html = cart
+      .map((item) => {
+        const p = parseFloat(item.price) || 0;
+        const q = parseInt(item.qty) || 1;
+        total += p * q;
+        return `
+        <div class="summary-item">
+          <div class="summary-item__info">
+            <strong>${item.name || "Producto"}</strong>
+            <span>x${q}</span>
+          </div>
+          <span>S/ ${(p * q).toFixed(2)}</span>
+        </div>
+      `;
+      })
+      .join("");
+
+    summaryItems.innerHTML = html;
+    subtotalEl.textContent = `S/ ${total.toFixed(2)}`;
+    totalEl.textContent = `S/ ${total.toFixed(2)}`;
+
+    // Manejo del formulario
+    if (form) {
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Procesando...";
+        }
+
+        const formData = new FormData(form);
+        const customerData = Object.fromEntries(formData);
+
+        try {
+          // 1. Guardar en Strapi
+          const res = await fetch(`${strapiUrl}/api/pedidos`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              data: {
+                nombreCliente: customerData.name,
+                emailCliente: customerData.email,
+                telefonoCliente: customerData.phone,
+                direccionEnvio: `${customerData.address}, ${customerData.district}, ${customerData.city}`,
+                total: total,
+                items: cart,
+                estado: "pendiente",
+              },
+            }),
+          });
+
+          if (!res.ok) throw new Error("Error al guardar pedido");
+
+          // 2. WhatsApp
+          const itemsText = cart
+            .map((i) => `- ${i.name} (x${i.qty})`)
+            .join("\n");
+          const msg = `*Pedido MiTienda*\n*Cliente:* ${customerData.name}\n\n*Productos:*\n${itemsText}\n\n*TOTAL: S/ ${total.toFixed(2)}*`;
+          window.open(
+            `https://wa.me/51925843268?text=${encodeURIComponent(msg)}`,
+            "_blank",
+          );
+
+          // 3. Finalizar
+          localStorage.removeItem("cart");
+          window.location.href = "/gracias";
+        } catch (err) {
+          alert("Error: " + err.message);
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Confirmar Pedido";
+          }
+        }
+      };
+    }
+  }
+
+  // Ejecutar
+  document.addEventListener("astro:page-load", renderCheckout);
+  // Por si acaso, también en load normal
+  if (document.readyState === "complete") renderCheckout();
+</script>
+
+<style>
+  .checkout-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 3rem;
+    align-items: start;
+    margin-top: 2rem;
+  }
+
+  .checkout-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .form-section h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .form-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+
+  .form-group input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.85rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  /* Payment Options */
+  .payment-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .payment-option {
+    cursor: pointer;
+    position: relative;
+  }
+
+  .payment-option input {
+    position: absolute;
+    opacity: 0;
+  }
+
+  .payment-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: all 0.2s;
+  }
+
+  .payment-option input:checked + .payment-content {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+  }
+
+  .payment-icon {
+    font-size: 1.5rem;
+  }
+
+  .payment-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .payment-text strong {
+    font-size: 1rem;
+  }
+
+  .payment-text span {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  /* Order Summary */
+  .order-summary {
+    background: var(--surface);
+    padding: 2rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    position: sticky;
+    top: 100px;
+  }
+
+  .summary-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .summary-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+  }
+
+  .summary-item__info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .summary-item__info span {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .summary-totals {
+    border-top: 1px solid var(--border);
+    padding-top: 1.5rem;
+  }
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .summary-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-top: 1rem;
+  }
+
+  .btn--large {
+    padding: 1.25rem;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 900px) {
+    .checkout-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

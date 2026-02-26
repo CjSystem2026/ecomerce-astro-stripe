@@ -1,0 +1,17 @@
+FROM node:20-alpine
+
+# Instalar dependencias del sistema
+RUN apk add --no-cache git
+
+WORKDIR /opt/app
+
+# Instalar dependencias primero (cacheado)
+COPY package*.json ./
+RUN npm install
+
+# Copiar el resto del código
+COPY . .
+
+EXPOSE 1337
+
+CMD ["npm", "run", "develop"]

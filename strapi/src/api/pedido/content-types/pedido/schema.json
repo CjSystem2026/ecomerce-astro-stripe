@@ -1,0 +1,47 @@
+{
+  "kind": "collectionType",
+  "collectionName": "pedidos",
+  "info": {
+    "singularName": "pedido",
+    "pluralName": "pedidos",
+    "displayName": "Pedido"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "nombreCliente": {
+      "type": "string",
+      "required": true
+    },
+    "emailCliente": {
+      "type": "email",
+      "required": true
+    },
+    "telefonoCliente": {
+      "type": "string"
+    },
+    "direccionEnvio": {
+      "type": "text",
+      "required": true
+    },
+    "total": {
+      "type": "decimal",
+      "required": true
+    },
+    "estado": {
+      "type": "enumeration",
+      "enum": [
+        "pendiente",
+        "pagado",
+        "enviado",
+        "entregado",
+        "cancelado"
+      ],
+      "default": "pendiente"
+    },
+    "items": {
+      "type": "json"
+    }
+  }
+}

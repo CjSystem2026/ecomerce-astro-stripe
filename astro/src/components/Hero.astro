@@ -1,0 +1,457 @@
+---
+
+---
+
+<section class="hero">
+  <div class="hero__orb hero__orb--1"></div>
+  <div class="hero__orb hero__orb--2"></div>
+
+  <div class="container hero__container">
+    <!-- Contenido izquierdo -->
+    <div class="hero__content">
+      <span class="hero__badge">
+        <span class="badge__dot"></span>
+        Tecnología a tu alcance
+      </span>
+
+      <h1 class="hero__title">
+        Descubre el Futuro de la
+        <span class="hero__gradient">Innovación</span>
+      </h1>
+
+      <p class="hero__desc">
+        Explora nuestra colección seleccionada de productos premium con envíos
+        rápidos y garantía total en cada compra.
+      </p>
+
+      <div class="hero__actions">
+        <a href="/productos" class="btn-primary">
+          Ver Catálogo
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            ><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg
+          >
+        </a>
+        <a href="#destacados" class="btn-ghost">Ver Ofertas</a>
+      </div>
+
+      <div class="hero__stats">
+        <div class="hero__stat">
+          <strong>10K+</strong>
+          <span>Clientes felices</span>
+        </div>
+        <div class="hero__stat-divider"></div>
+        <div class="hero__stat">
+          <strong>4.9★</strong>
+          <span>Valoración media</span>
+        </div>
+        <div class="hero__stat-divider"></div>
+        <div class="hero__stat">
+          <strong>48h</strong>
+          <span>Entrega express</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visual derecho -->
+    <div class="hero__visual" aria-hidden="true">
+      <div class="hero__glow"></div>
+      <div class="hero__cards">
+        <div class="hcard hcard--1">📱<span>Smartphones</span></div>
+        <div class="hcard hcard--2">⌚<span>Wearables</span></div>
+        <div class="hcard hcard--3">🎮<span>Gaming</span></div>
+        <div class="hcard hcard--4">🎧<span>Audio</span></div>
+      </div>
+      <div class="hero__badge-float">
+        <span class="badge-fire">🔥</span>
+        <div>
+          <div class="badge-label">Más vendido</div>
+          <div class="badge-price">desde <strong>S/ 45</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    padding: 6rem 0 5rem;
+    overflow: hidden;
+  }
+
+  /* Orbes de fondo */
+  .hero__orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .hero__orb--1 {
+    width: 520px;
+    height: 520px;
+    background: radial-gradient(
+      circle,
+      rgba(124, 58, 237, 0.2),
+      transparent 70%
+    );
+    top: -100px;
+    right: -100px;
+    animation: orb 12s infinite alternate ease-in-out;
+  }
+  .hero__orb--2 {
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(
+      circle,
+      rgba(244, 63, 94, 0.12),
+      transparent 70%
+    );
+    bottom: -80px;
+    left: -50px;
+    animation: orb 16s infinite alternate-reverse ease-in-out;
+  }
+  @keyframes orb {
+    from {
+      transform: translate(0, 0);
+    }
+    to {
+      transform: translate(40px, -30px);
+    }
+  }
+
+  /* Layout grid */
+  .hero__container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Contenido */
+  .hero__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* Badge */
+  .hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 1rem;
+    background: rgba(124, 58, 237, 0.12);
+    border: 1px solid rgba(124, 58, 237, 0.3);
+    color: #a78bfa;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 1.5rem;
+    width: fit-content;
+  }
+  .badge__dot {
+    width: 7px;
+    height: 7px;
+    background: #a78bfa;
+    border-radius: 50%;
+    animation: blink 2s infinite;
+  }
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.25;
+    }
+  }
+
+  /* Título */
+  .hero__title {
+    font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+  }
+  .hero__gradient {
+    display: block;
+    background: linear-gradient(135deg, #7c3aed, #f43f5e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Descripción */
+  .hero__desc {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    max-width: 460px;
+  }
+
+  /* Botones */
+  .hero__actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.75rem;
+    background: linear-gradient(135deg, #7c3aed, #f43f5e);
+    color: white;
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
+    transition: all 0.25s ease;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(124, 58, 237, 0.5);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.85rem 1.5rem;
+    background: var(--surface);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.25s ease;
+  }
+  .btn-ghost:hover {
+    color: var(--text);
+    border-color: rgba(124, 58, 237, 0.4);
+    background: var(--surface-2);
+  }
+
+  /* Stats */
+  .hero__stats {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .hero__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .hero__stat strong {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .hero__stat span {
+    font-size: 0.73rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .hero__stat-divider {
+    width: 1px;
+    height: 36px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  /* Visual */
+  .hero__visual {
+    position: relative;
+    height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero__glow {
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(
+      circle,
+      rgba(124, 58, 237, 0.3),
+      transparent 70%
+    );
+    border-radius: 50%;
+    animation: pulse-g 5s infinite alternate;
+  }
+  @keyframes pulse-g {
+    from {
+      transform: scale(0.9);
+      opacity: 0.5;
+    }
+    to {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+  }
+
+  /* Cards de categoría flotantes */
+  .hero__cards {
+    position: relative;
+    width: 280px;
+    height: 280px;
+  }
+
+  .hcard {
+    position: absolute;
+    background: var(--surface-2);
+    border: 1px solid rgba(124, 58, 237, 0.2);
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 1.8rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: float 7s infinite ease-in-out;
+    padding: 1rem;
+  }
+  .hcard span {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .hcard--1 {
+    width: 110px;
+    height: 110px;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    animation-delay: 0s;
+  }
+  .hcard--2 {
+    width: 95px;
+    height: 95px;
+    bottom: 10%;
+    left: -5%;
+    animation-delay: 1.5s;
+  }
+  .hcard--3 {
+    width: 100px;
+    height: 100px;
+    bottom: 5%;
+    right: -5%;
+    animation-delay: 3s;
+  }
+  .hcard--4 {
+    width: 88px;
+    height: 88px;
+    top: 30%;
+    right: -10%;
+    animation-delay: 2s;
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-16px);
+    }
+  }
+  .hcard--1 {
+    animation-name: float;
+  }
+
+  /* Badge flotante "más vendido" */
+  .hero__badge-float {
+    position: absolute;
+    bottom: 10px;
+    left: -10px;
+    background: var(--surface);
+    border: 1px solid rgba(124, 58, 237, 0.3);
+    border-radius: 14px;
+    padding: 0.7rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    animation: float 6s infinite ease-in-out;
+    animation-delay: 0.5s;
+  }
+  .badge-fire {
+    font-size: 1.4rem;
+  }
+  .badge-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .badge-price {
+    font-size: 0.85rem;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .badge-price strong {
+    font-weight: 800;
+    background: linear-gradient(135deg, #7c3aed, #f43f5e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Responsive */
+  @media (max-width: 960px) {
+    .hero {
+      padding: 4rem 0 3rem;
+    }
+    .hero__container {
+      grid-template-columns: 1fr;
+      text-align: center;
+      gap: 3rem;
+    }
+    .hero__badge {
+      margin: 0 auto 1.5rem;
+    }
+    .hero__desc {
+      margin: 0 auto 2rem;
+      max-width: 100%;
+    }
+    .hero__actions {
+      justify-content: center;
+    }
+    .hero__stats {
+      justify-content: center;
+    }
+    .hero__visual {
+      display: none;
+    }
+  }
+</style>

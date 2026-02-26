@@ -1,0 +1,178 @@
+---
+export const prerender = false;
+
+import MainLayout from "@/layouts/MainLayout.astro";
+import ProductCard from "@/components/ProductCard.astro";
+import { getProducts, getCategories } from "@/lib/strapi";
+
+const categoriaSlug = Astro.url.searchParams.get("categoria") ?? undefined;
+const search = Astro.url.searchParams.get("search") ?? undefined;
+const pageParam = Astro.url.searchParams.get("pagina");
+const page = pageParam ? parseInt(pageParam) : 1;
+
+const [{ data: products, meta }, categories] = await Promise.all([
+  getProducts({ page, pageSize: 12, categoria: categoriaSlug, search }),
+  getCategories(),
+]);
+
+const { pagination } = meta;
+---
+
+<MainLayout
+  title="Todos los productos — MiTienda"
+  description="Explora nuestra colección completa de productos. Filtra por categoría y encuentra lo que buscas."
+>
+  <section class="section">
+    <div class="container">
+      <div class="page-header">
+        <h1 class="section-title">
+          {search ? `Resultados para "${search}"` : "Productos"}
+        </h1>
+        <p class="page-header__count">
+          {pagination.total} productos encontrados
+        </p>
+      </div>
+
+      <!-- Filtros por categoría -->
+      {
+        categories.length > 0 && (
+          <div class="filters">
+            <a
+              href="/productos"
+              class={`filter-chip ${!categoriaSlug ? "filter-chip--active" : ""}`}
+            >
+              Todos
+            </a>
+            {categories.map((cat) => (
+              <a
+                href={`/productos?categoria=${cat.slug}`}
+                class={`filter-chip ${categoriaSlug === cat.slug ? "filter-chip--active" : ""}`}
+              >
+                {cat.nombre}
+              </a>
+            ))}
+          </div>
+        )
+      }
+
+      <!-- Grid de productos -->
+      {
+        products.length > 0 ? (
+          <div class="products-grid">
+            {products.map((product) => (
+              <ProductCard product={product} />
+            ))}
+          </div>
+        ) : (
+          <div class="empty">
+            <p>No hay productos en esta categoría aún.</p>
+          </div>
+        )
+      }
+
+      <!-- Paginación -->
+      {
+        pagination.pageCount > 1 && (
+          <nav class="pagination" aria-label="Paginación">
+            {page > 1 && (
+              <a
+                href={`/productos?pagina=${page - 1}${categoriaSlug ? `&categoria=${categoriaSlug}` : ""}${search ? `&search=${search}` : ""}`}
+                class="pagination__btn"
+              >
+                ← Anterior
+              </a>
+            )}
+            <span class="pagination__info">
+              Página {page} de {pagination.pageCount}
+            </span>
+            {page < pagination.pageCount && (
+              <a
+                href={`/productos?pagina=${page + 1}${categoriaSlug ? `&categoria=${categoriaSlug}` : ""}${search ? `&search=${search}` : ""}`}
+                class="pagination__btn"
+              >
+                Siguiente →
+              </a>
+            )}
+          </nav>
+        )
+      }
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .page-header__count {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 2rem;
+  }
+
+  .filter-chip {
+    padding: 0.5rem 1.1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .filter-chip:hover,
+  .filter-chip--active {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(99, 102, 241, 0.1);
+  }
+
+  .empty {
+    text-align: center;
+    padding: 4rem;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 16px;
+  }
+
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .pagination__btn {
+    text-decoration: none;
+    padding: 0.6rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .pagination__btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+  .pagination__info {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+</style>

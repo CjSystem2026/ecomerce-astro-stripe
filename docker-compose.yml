@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  strapi:
+    build:
+      context: ./strapi
+      dockerfile: Dockerfile.dev
+    container_name: strapi_dev
+    restart: unless-stopped
+    env_file: ./strapi/.env
+    environment:
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${POSTGRES_DB:-strapi}
+      DATABASE_USERNAME: ${POSTGRES_USER:-strapi}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-strapi_password}
+      NODE_ENV: development
+    ports:
+      - "1337:1337"
+    volumes:
+      - ./strapi:/opt/app
+      - /opt/app/node_modules
+    command: sh -c "npm install && npm run develop"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - strapi_network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres_dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-strapi}
+      POSTGRES_USER: ${POSTGRES_USER:-strapi}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-strapi_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-strapi}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - strapi_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  strapi_network:
+    driver: bridge
