@@ -7,6 +7,9 @@ export default defineConfig({
   adapter: vercel({
     webAnalytics: { enabled: true },
   }),
+  image: {
+    domains: ['reassuring-flower-045536ee58.strapiapp.com'],
+  },
   server: {
     port: 4321,
   },

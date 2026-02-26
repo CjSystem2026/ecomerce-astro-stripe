@@ -1,0 +1,7 @@
+{
+  "smartwatch": 1,
+  "tablet": 2,
+  "monitor": 3,
+  "camera": 4,
+  "speaker": 5
+}

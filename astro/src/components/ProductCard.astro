@@ -1,4 +1,5 @@
 ---
+import { Image } from "astro:assets";
 import type { Product } from "@/types/strapi";
 import { getStrapiImageUrl } from "@/lib/strapi";
 
@@ -10,7 +11,14 @@ const { product } = Astro.props;
 const productImg = Array.isArray(product.imagen)
   ? product.imagen[0]
   : product.imagen;
-const imageUrl = getStrapiImageUrl(productImg?.url);
+
+// Fallback image URL si no hay imagen en el backend
+const defaultPlaceholder =
+  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop";
+const imageUrl = productImg?.url
+  ? getStrapiImageUrl(productImg.url)
+  : defaultPlaceholder;
+
 const hasDiscount =
   product.precioOferta && product.precioOferta < product.precio;
 const discountPercent = hasDiscount
@@ -22,12 +30,16 @@ const discountPercent = hasDiscount
 
 <article class="product-card">
   <a href={`/productos/${product.slug}`} class="product-card__image-link">
-    <img
+    <Image
       src={imageUrl}
       alt={productImg?.alternativeText ?? product.nombre}
-      width="400"
-      height="300"
-      loading="lazy"
+      width={400}
+      height={300}
+      widths={[240, 400, 720]}
+      sizes="(max-width: 720px) 100vw, 400px"
+      format="webp"
+      quality="mid"
+      class="product-card__image"
     />
     {
       hasDiscount && (
@@ -136,11 +148,30 @@ const discountPercent = hasDiscount
     background: var(--surface-2);
   }
 
+  /* Mientras carga la imagen real, mostrar skeleton */
+  .product-card__image-link:not(.is-loaded) {
+    background: linear-gradient(
+      90deg,
+      var(--surface-2) 25%,
+      var(--surface-3) 50%,
+      var(--surface-2) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite linear;
+  }
+
   .product-card__image-link img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+      transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.3s;
+    opacity: 0; /* Oculta hasta que cargue */
+  }
+
+  .product-card__image-link.is-loaded img {
+    opacity: 1;
   }
 
   .product-card:hover .product-card__image-link img {
@@ -301,3 +332,21 @@ const discountPercent = hasDiscount
     transform: scale(0.97);
   }
 </style>
+
+<script>
+  function handleImageLoad() {
+    const images = document.querySelectorAll(".product-card__image-link img");
+    images.forEach((img) => {
+      if ((img as HTMLImageElement).complete) {
+        img.parentElement?.classList.add("is-loaded");
+      }
+      img.addEventListener("load", () => {
+        img.parentElement?.classList.add("is-loaded");
+      });
+    });
+  }
+
+  // Ejecutar en carga inicial y transiciones
+  handleImageLoad();
+  document.addEventListener("astro:page-load", handleImageLoad);
+</script>
