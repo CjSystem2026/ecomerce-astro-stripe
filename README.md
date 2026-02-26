@@ -1,72 +1,81 @@
-# E-commerce Astro + Strapi
+# 🛍️ MiTienda Boilerplate - Astro + Strapi Cloud
 
-Este proyecto es un e-commerce moderno utilizando **Astro** para el frontend y **Strapi** como Headless CMS.
+Este es un **Boilerplate Fullstack** de alto rendimiento diseñado para crear eCommerce o Blogs modernos en tiempo récord. Utiliza una arquitectura **Headless** para separar el contenido (Strapi) de la presentación (Astro), logrando velocidades de carga superiores a WordPress o Shopify.
 
-## Estructura del proyecto
+---
 
-- `/astro`: Aplicación frontend (Astro, TypeScript, Vercel).
-- `/strapi`: Backend CMS (Strapi, PostgreSQL, Docker).
-- `docker-compose.yml`: Configuración para levantar la base de datos y Strapi localmente.
+## 🚀 Características Principales
 
-## Requisitos previos
+- **Frontend**: [Astro 5](https://astro.build/) (Ultra rápido, islas de interactividad).
+- **Backend**: [Strapi 5](https://strapi.io/) (Headless CMS potente e intuitivo).
+- **Despliegue**: Optimizado para **Vercel** y **Strapi Cloud**.
+- **Imagen Pro**: Optimización automática con `astro:assets` (WebP/AVIF).
+- **UX Premuim**: Skeletons loaders, Glassmorphism y animaciones fluidas (CSS Puro).
+- **Monorepo**: Frontend y Backend en un solo repositorio para facilitar el despliegue.
 
-- Docker y Docker Compose
-- Node.js (v18 o superior)
-- npm o yarn
+---
 
-## Guía de Inicio Rápido
+## 🛠️ Estructura del Proyecto
 
-### 1. Configurar el Backend (Strapi)
-
-Primero, necesitamos inicializar el proyecto Strapi si aún no se ha hecho:
-
-```bash
-# Si la carpeta /strapi está vacía, ejecute:
-npx create-strapi-app@latest strapi --quickstart --no-run
+```text
+├── astro/         # Frontend (Páginas, Componentes, Estilos)
+├── strapi/        # Backend (Modelos, API, Plugins)
+├── tools/         # Scripts de utilidad (Seeding, Carga masiva)
+└── docker-compose # Configuración para desarrollo local
 ```
 
-Luego, levanta el entorno con Docker:
+---
+
+## 🏁 Guía de Inicio Rápido
+
+### 1. Clonar y Configurar
 
 ```bash
-docker-compose up -d
+git clone <tu-repo-url>
+cd ecomerce-astro-stripe
 ```
 
-Esto levantará:
+### 2. Variables de Entorno
 
-- **Strapi** en `http://localhost:1337`
-- **PostgreSQL** en el puerto `5432`
+Crea un archivo `.env` en la carpeta `astro/` con:
 
-### 2. Configurar el Frontend (Astro)
+```env
+PUBLIC_STRAPI_URL=https://tu-proyecto.strapiapp.com
+```
 
-Entra en la carpeta de Astro e instala las dependencias:
+### 3. Instalar Dependencias
+
+- **Astro**: `cd astro && npm install`
+- **Strapi**: `cd strapi && npm install`
+
+### 4. Lanzar en Desarrollo
 
 ```bash
-cd astro
-npm install
-npm run dev
+# En terminal 1 (Astro)
+cd astro && npm run dev
+# En terminal 2 (Strapi)
+cd strapi && npm run develop
 ```
 
-El frontend estará disponible en `http://localhost:4321`.
+---
 
-### 3. Siguientes Pasos en Strapi (Admin)
+## 📂 Herramientas (/tools)
 
-Una vez que Strapi esté corriendo, ve a `http://localhost:1337/admin` y crea tu usuario administrador. Luego crea los siguientes **Content Types**:
+He incluido scripts automáticos para facilitar el trabajo:
 
-1.  **Categoria**:
-    - `nombre` (Text)
-    - `slug` (UID, vinculado a nombre)
-2.  **Producto**:
-    - `nombre` (Text)
-    - `slug` (UID, vinculado a nombre)
-    - `descripcion` (Rich Text / Blocks)
-    - `precio` (Number / Decimal)
-    - `precioOferta` (Number / Decimal, opcional)
-    - `stock` (Number / Integer)
-    - `destacado` (Boolean)
-    - `imagen` (Media, single)
-    - `categoria` (Relation, Many-to-One con Categoria)
+- `seed_prod.mjs`: Llenar el catálogo de producción automáticamente.
+- `upload_prod.mjs`: Subir imágenes locales a la nube de Strapi Cloud.
 
-## Despliegue
+---
 
-- **Frontend**: Conecta la carpeta `/astro` a **Vercel**.
-- **Backend**: Despliega la carpeta `/strapi` en **Strapi Cloud**.
+## 💡 ¿Cómo usarlo para un Cliente?
+
+1.  **Categorías**: Define tus categorías en el panel de Strapi.
+2.  **Branding**: Cambia los colores en `astro/src/layouts/MainLayout.astro` dentro de `:root`.
+3.  **Componentes**: Los componentes en `astro/src/components` son 100% reutilizables.
+
+---
+
+## 📄 Licencia
+
+Desarrollado por **Cristian** para portafolio profesional. ✨🦾
