@@ -139,14 +139,12 @@ import MainLayout from "@/layouts/MainLayout.astro";
 </MainLayout>
 
 <script
-  is:inline
-  data-strapi-url={import.meta.env.PUBLIC_STRAPI_URL || "http://localhost:1337"}
+  define:vars={{
+    strapiUrl: import.meta.env.PUBLIC_STRAPI_URL || "http://localhost:1337",
+  }}
 >
   function renderCheckout() {
-    console.log("🚀 Iniciando render de Checkout...");
-    const strapiUrl =
-      document.currentScript?.getAttribute("data-strapi-url") ||
-      "http://localhost:1337";
+    console.log("🚀 Iniciando render de Checkout con URL:", strapiUrl);
 
     // Elementos
     const summaryItems = document.getElementById("summary-items");
