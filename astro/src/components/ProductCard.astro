@@ -115,10 +115,10 @@ const discountPercent = hasDiscount
     display: flex;
     flex-direction: column;
     transition:
-      transform var(--transition),
-      box-shadow var(--transition),
-      border-color var(--transition);
-    box-shadow: var(--shadow-card);
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 0.3s;
+    box-shadow: var(--shadow-sm);
     animation: card-in 0.5s both;
   }
 
@@ -134,9 +134,9 @@ const discountPercent = hasDiscount
   }
 
   .product-card:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-card-hover);
-    border-color: var(--border-hover);
+    transform: translateY(-8px);
+    box-shadow: var(--shadow);
+    border-color: var(--primary-glow);
   }
 
   /* Image */
@@ -183,7 +183,7 @@ const discountPercent = hasDiscount
     content: "Ver producto →";
     position: absolute;
     inset: 0;
-    background: rgba(124, 58, 237, 0.7);
+    background: rgba(236, 55, 19, 0.85);
     color: white;
     font-size: 0.9rem;
     font-weight: 700;
@@ -204,14 +204,14 @@ const discountPercent = hasDiscount
     position: absolute;
     top: 12px;
     left: 12px;
-    background: var(--gradient-primary);
+    background: var(--primary);
     color: white;
     font-size: 0.72rem;
     font-weight: 700;
     padding: 4px 10px;
     border-radius: 999px;
     z-index: 1;
-    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.4);
+    box-shadow: 0 4px 12px rgba(236, 55, 19, 0.3);
   }
 
   /* Body */
@@ -227,7 +227,7 @@ const discountPercent = hasDiscount
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--primary-light);
+    color: var(--primary);
     font-weight: 700;
   }
 
@@ -249,7 +249,7 @@ const discountPercent = hasDiscount
   }
 
   .product-card__title a:hover {
-    color: var(--primary-light);
+    color: var(--primary);
   }
 
   /* Pricing */
@@ -269,16 +269,13 @@ const discountPercent = hasDiscount
   }
 
   .product-card__price--sale {
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--primary);
   }
 
   .product-card__price--original {
     font-size: 0.85rem;
     font-weight: 400;
-    color: var(--text-subtle);
+    color: var(--text-muted);
     text-decoration: line-through;
   }
 
@@ -307,7 +304,7 @@ const discountPercent = hasDiscount
     content: "";
     position: absolute;
     inset: 0;
-    background: var(--gradient-primary);
+    background: var(--primary);
     opacity: 0;
     transition: opacity var(--transition);
   }
@@ -316,7 +313,7 @@ const discountPercent = hasDiscount
     border-color: transparent;
     color: white;
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(124, 58, 237, 0.35);
+    box-shadow: 0 8px 20px rgba(236, 55, 19, 0.25);
   }
 
   .product-card__btn:hover::before {

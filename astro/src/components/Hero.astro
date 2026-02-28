@@ -97,28 +97,28 @@
     z-index: 0;
   }
   .hero__orb--1 {
-    width: 520px;
-    height: 520px;
+    width: 600px;
+    height: 600px;
     background: radial-gradient(
       circle,
-      rgba(124, 58, 237, 0.2),
+      rgba(236, 55, 19, 0.08),
       transparent 70%
     );
-    top: -100px;
-    right: -100px;
-    animation: orb 12s infinite alternate ease-in-out;
+    top: -150px;
+    right: -150px;
+    animation: orb 15s infinite alternate ease-in-out;
   }
   .hero__orb--2 {
-    width: 380px;
-    height: 380px;
+    width: 450px;
+    height: 450px;
     background: radial-gradient(
       circle,
-      rgba(244, 63, 94, 0.12),
+      rgba(236, 55, 19, 0.05),
       transparent 70%
     );
-    bottom: -80px;
-    left: -50px;
-    animation: orb 16s infinite alternate-reverse ease-in-out;
+    bottom: -100px;
+    left: -100px;
+    animation: orb 20s infinite alternate-reverse ease-in-out;
   }
   @keyframes orb {
     from {
@@ -151,22 +151,22 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.4rem 1rem;
-    background: rgba(124, 58, 237, 0.12);
-    border: 1px solid rgba(124, 58, 237, 0.3);
-    color: #a78bfa;
+    padding: 0.5rem 1.25rem;
+    background: var(--primary-glow);
+    border: 1px solid rgba(236, 55, 19, 0.2);
+    color: var(--primary);
     border-radius: 999px;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 1.5rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 2rem;
     width: fit-content;
   }
   .badge__dot {
-    width: 7px;
-    height: 7px;
-    background: #a78bfa;
+    width: 8px;
+    height: 8px;
+    background: var(--primary);
     border-radius: 50%;
     animation: blink 2s infinite;
   }
@@ -190,8 +190,8 @@
     margin-bottom: 1.25rem;
   }
   .hero__gradient {
-    display: block;
-    background: linear-gradient(135deg, #7c3aed, #f43f5e);
+    display: inline;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -218,20 +218,21 @@
   .btn-primary {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.85rem 1.75rem;
-    background: linear-gradient(135deg, #7c3aed, #f43f5e);
+    gap: 0.6rem;
+    padding: 1rem 2rem;
+    background: var(--primary);
     color: white;
     border-radius: var(--radius);
     text-decoration: none;
     font-weight: 700;
-    font-size: 1rem;
-    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
-    transition: all 0.25s ease;
+    font-size: 1.05rem;
+    box-shadow: 0 10px 25px rgba(236, 55, 19, 0.25);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(124, 58, 237, 0.5);
+    transform: translateY(-3px);
+    background: var(--primary-light);
+    box-shadow: 0 15px 35px rgba(236, 55, 19, 0.35);
   }
 
   .btn-ghost {
@@ -295,11 +296,11 @@
 
   .hero__glow {
     position: absolute;
-    width: 280px;
-    height: 280px;
+    width: 320px;
+    height: 320px;
     background: radial-gradient(
       circle,
-      rgba(124, 58, 237, 0.3),
+      rgba(236, 55, 19, 0.1),
       transparent 70%
     );
     border-radius: 50%;
@@ -421,10 +422,7 @@
   }
   .badge-price strong {
     font-weight: 800;
-    background: linear-gradient(135deg, #7c3aed, #f43f5e);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--primary);
   }
 
   /* Responsive */
