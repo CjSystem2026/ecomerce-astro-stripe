@@ -12,19 +12,62 @@ const [products, categories] = await Promise.all([
   getFeaturedProducts(),
   getCategories(),
 ]);
+
+// Los primeros 3 son "Más Vendidos"
+const bestsellers = products.slice(0, 3);
+const rest = products.slice(3);
 ---
 
 <MainLayout
   title="MiTienda — Tu tienda online de confianza"
   description="Encuentra los mejores productos al mejor precio con envíos rápidos y seguros."
 >
-  <!-- 1. HERO — Captar atención -->
+  <!-- 1. HERO -->
   <Hero />
 
-  <!-- 2. TRUST BAR — Eliminar objeciones -->
+  <!-- 2. TRUST BAR -->
   <TrustBar />
 
-  <!-- 3. CATEGORÍAS — Orientar al usuario -->
+  <!-- 3. BEST SELLERS (PRIMEROS 3) — Estilo Stitch: sección prominente -->
+  {
+    bestsellers.length > 0 && (
+      <section class="section section--bestsellers" id="destacados">
+        <div class="container">
+          <div class="section-header">
+            <div>
+              <span class="section-eyebrow">🔥 Más vendidos</span>
+              <h2 class="section-title">Los Favoritos de Nuestros Clientes</h2>
+            </div>
+            <a href="/productos" class="link-ver-todos">
+              Ver todo el catálogo →
+            </a>
+          </div>
+          <div class="products-grid products-grid--hero">
+            {bestsellers.map((product, i) => (
+              <div class="product-card-wrapper">
+                {i === 0 && (
+                  <div class="bestseller-badge">🏆 #1 Más Vendido</div>
+                )}
+                {i === 1 && (
+                  <div class="bestseller-badge bestseller-badge--2">
+                    ⭐ #2 Favorito
+                  </div>
+                )}
+                {i === 2 && (
+                  <div class="bestseller-badge bestseller-badge--3">
+                    🔥 Tendencia
+                  </div>
+                )}
+                <ProductCard product={product} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 4. CATEGORÍAS — Orientar al usuario -->
   {
     categories.length > 0 && (
       <div class="container">
@@ -33,69 +76,139 @@ const [products, categories] = await Promise.all([
     )
   }
 
-  <!-- 4. PRODUCTOS DESTACADOS — Crear deseo -->
-  <section class="section" id="destacados">
+  <!-- 5. SOCIAL PROOF — Confianza (estilo Stitch) -->
+  <section class="section section--reviews">
     <div class="container">
       <div class="section-header">
         <div>
-          <span class="section-eyebrow">Selección especial</span>
-          <h2 class="section-title">Lo más destacado 🔥</h2>
+          <span class="section-eyebrow">💬 Testimonios</span>
+          <h2 class="section-title">Lo que dicen nuestros clientes</h2>
         </div>
-        <a href="/productos" class="link-ver-todos"> Ver todo el catálogo → </a>
       </div>
+      <div class="reviews-grid">
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">
+            "Llegó súper rápido y el producto es exactamente como se ve en las
+            fotos. Definitivamente volvería a comprar."
+          </p>
+          <div class="review-author">
+            <div class="review-avatar">M</div>
+            <div>
+              <strong>María G.</strong>
+              <span>Lima · hace 2 días</span>
+            </div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">
+            "Excelente atención por WhatsApp. Me ayudaron con las dudas y el
+            delivery fue puntual. Super recomendado."
+          </p>
+          <div class="review-author">
+            <div class="review-avatar">C</div>
+            <div>
+              <strong>Carlos R.</strong>
+              <span>Miraflores · hace 1 semana</span>
+            </div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">
+            "La calidad supera el precio. Compré 3 veces y siempre igual de
+            bien. Mi tienda favorita en Lima."
+          </p>
+          <div class="review-author">
+            <div class="review-avatar">A</div>
+            <div>
+              <strong>Ana P.</strong>
+              <span>San Isidro · hace 3 días</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-      {
-        products.length > 0 ? (
+  <!-- 6. RESTO DE PRODUCTOS (si hay más) -->
+  {
+    rest.length > 0 && (
+      <section class="section">
+        <div class="container">
+          <div class="section-header">
+            <div>
+              <span class="section-eyebrow">Selección del mes</span>
+              <h2 class="section-title">También te puede gustar</h2>
+            </div>
+            <a href="/productos" class="link-ver-todos">
+              Ver todos →
+            </a>
+          </div>
           <div class="products-grid">
-            {products.map((product) => (
+            {rest.map((product) => (
               <ProductCard product={product} />
             ))}
           </div>
-        ) : (
-          <div class="empty-state">
-            <p>
-              🛒 No hay productos destacados aún. Marca algunos como "destacado"
-              desde Strapi.
-            </p>
-          </div>
-        )
-      }
-    </div>
-  </section>
+        </div>
+      </section>
+    )
+  }
 
-  <!-- 5. CTA BANNER — Empujar al catálogo completo -->
+  <!-- 7. CTA BANNER — En color primario -->
   <section class="cta-banner">
     <div class="container">
       <div class="cta-banner__content">
-        <h2>¿No encontraste lo que buscabas?</h2>
-        <p>
-          Tenemos más de 20 productos esperándote en nuestro catálogo completo.
-        </p>
-        <a href="/productos" class="cta-banner__btn">
-          Ver catálogo completo
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            ><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg
+        <div class="cta-banner__dots"></div>
+        <span class="cta-banner__eyebrow">Catálogo completo</span>
+        <h2>¿Buscas algo más específico?</h2>
+        <p>Tenemos más de 20 productos esperándote en nuestro catálogo.</p>
+        <div class="cta-banner__actions">
+          <a href="/productos" class="cta-primary">
+            Ver catálogo completo
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              ><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg
+            >
+          </a>
+          <a
+            href="https://wa.me/51925843268"
+            target="_blank"
+            class="cta-secondary"
           >
-        </a>
+            💬 Hablar con asesor
+          </a>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- 6. BOTÓN WHATSAPP FLOTANTE -->
+  <!-- 8. WHATSAPP FLOTANTE -->
   <WhatsAppBtn />
 </MainLayout>
 
 <style>
-  /* Section header con "Ver todos" */
+  /* ── Section base ──────────────────── */
+  .section {
+    padding: 4rem 0;
+  }
+  .section--bestsellers {
+    padding: 3rem 0 4rem;
+  }
+  .section--reviews {
+    background: var(--surface);
+    padding: 4rem 0;
+  }
+
   .section-header {
     display: flex;
     align-items: flex-end;
@@ -104,49 +217,142 @@ const [products, categories] = await Promise.all([
     gap: 1rem;
     flex-wrap: wrap;
   }
-
   .section-eyebrow {
     display: block;
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--primary-light);
+    color: var(--primary);
     margin-bottom: 0.35rem;
   }
-
   .section-title {
     font-size: clamp(1.4rem, 3vw, 1.9rem);
     font-weight: 800;
     margin: 0;
   }
-
   .link-ver-todos {
     font-size: 0.9rem;
     font-weight: 600;
-    color: var(--primary-light);
+    color: var(--primary);
     text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
     white-space: nowrap;
     transition: opacity 0.2s;
-    padding-bottom: 2px;
   }
   .link-ver-todos:hover {
     opacity: 0.7;
   }
 
-  /* CTA Banner */
-  .cta-banner {
-    padding: 4rem 0;
+  /* ── Bestseller badges ─────────────── */
+  .product-card-wrapper {
+    position: relative;
   }
 
-  .cta-banner__content {
-    background: var(--surface);
+  .bestseller-badge {
+    position: absolute;
+    top: -10px;
+    left: 12px;
+    z-index: 10;
+    background: var(--primary);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.03em;
+    box-shadow: 0 4px 12px rgba(236, 55, 19, 0.3);
+    white-space: nowrap;
+  }
+  .bestseller-badge--2 {
+    background: #7c3aed;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+  }
+  .bestseller-badge--3 {
+    background: #d97706;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+  }
+
+  /* ── Products grid ─────────────────── */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+  .products-grid--hero {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.75rem;
+  }
+
+  /* ── Reviews ───────────────────────── */
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  .review-card {
+    background: var(--bg);
     border: 1px solid var(--border);
     border-radius: var(--radius-xl);
-    padding: 3rem 2.5rem;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
+  }
+  .review-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+  }
+  .review-stars {
+    color: #f59e0b;
+    font-size: 1rem;
+    letter-spacing: 2px;
+  }
+  .review-text {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-style: italic;
+    flex: 1;
+  }
+  .review-author {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .review-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary-glow);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+  .review-author strong {
+    display: block;
+    font-size: 0.88rem;
+  }
+  .review-author span {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  /* ── CTA Banner ────────────────────── */
+  .cta-banner {
+    padding: 4rem 0 5rem;
+  }
+  .cta-banner__content {
+    background: var(--primary);
+    border-radius: var(--radius-xl);
+    padding: 3.5rem 2.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -155,56 +361,94 @@ const [products, categories] = await Promise.all([
     position: relative;
     overflow: hidden;
   }
-
   .cta-banner__content::before {
     content: "";
     position: absolute;
     inset: 0;
     background: radial-gradient(
-      ellipse at center top,
-      rgba(124, 58, 237, 0.12),
+      ellipse at top right,
+      rgba(255, 255, 255, 0.15),
       transparent 60%
     );
     pointer-events: none;
   }
-
+  .cta-banner__dots {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.1) 1px,
+      transparent 1px
+    );
+    background-size: 24px 24px;
+    pointer-events: none;
+  }
+  .cta-banner__eyebrow {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.7);
+    position: relative;
+  }
   .cta-banner__content h2 {
-    font-size: clamp(1.4rem, 3vw, 2rem);
-    font-weight: 800;
-    color: var(--text);
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 900;
+    color: white;
     position: relative;
+    letter-spacing: -0.02em;
   }
-
   .cta-banner__content p {
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.8);
     font-size: 1rem;
-    max-width: 500px;
+    max-width: 480px;
     position: relative;
   }
-
-  .cta-banner__btn {
+  .cta-banner__actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: relative;
+    margin-top: 0.5rem;
+  }
+  .cta-primary {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background: linear-gradient(135deg, #7c3aed, #f43f5e);
+    background: white;
+    color: var(--primary);
+    padding: 0.9rem 2rem;
+    border-radius: var(--radius);
+    font-weight: 800;
+    font-size: 0.95rem;
+    text-decoration: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    transition: all 0.25s ease;
+  }
+  .cta-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  }
+  .cta-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.15);
     color: white;
     padding: 0.9rem 2rem;
     border-radius: var(--radius);
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 0.95rem;
     text-decoration: none;
-    margin-top: 0.5rem;
-    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
-    transition: all 0.25s ease;
-    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: background 0.2s;
+  }
+  .cta-secondary:hover {
+    background: rgba(255, 255, 255, 0.25);
   }
 
-  .cta-banner__btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(124, 58, 237, 0.5);
-  }
-
-  /* Empty state */
+  /* ── Empty state ───────────────────── */
   .empty-state {
     text-align: center;
     padding: 3rem 2rem;
@@ -213,5 +457,33 @@ const [products, categories] = await Promise.all([
     border-radius: var(--radius-lg);
     color: var(--text-muted);
     font-size: 1rem;
+  }
+
+  /* ── Responsive ────────────────────── */
+  @media (max-width: 900px) {
+    .products-grid--hero {
+      grid-template-columns: 1fr 1fr;
+    }
+    .reviews-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+  @media (max-width: 600px) {
+    .products-grid--hero {
+      grid-template-columns: 1fr;
+    }
+    .cta-banner__content {
+      padding: 2.5rem 1.5rem;
+    }
+    .cta-banner__actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .cta-primary,
+    .cta-secondary {
+      text-align: center;
+      justify-content: center;
+    }
   }
 </style>
