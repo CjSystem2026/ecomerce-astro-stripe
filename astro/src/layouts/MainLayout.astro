@@ -190,52 +190,48 @@ const {
 <style is:global>
   /* ─── Design Tokens ─────────────────────────────────────────── */
   :root {
-    /* Colors */
+    /* Brand */
     --primary: #ec3713;
     --primary-light: #ff5e3a;
     --primary-dark: #c12b00;
-    --primary-glow: rgba(236, 55, 19, 0.15);
+    --primary-glow: rgba(236, 55, 19, 0.12);
 
-    /* Text */
+    /* Typography */
     --font-sans: "Manrope", system-ui, -apple-system, sans-serif;
-    --text: #0a0a0b;
+    --text: #0f172a;
     --text-muted: #64748b;
-    --text-on-primary: #ffffff;
+    --text-subtle: #94a3b8;
 
-    /* Surfaces */
+    /* Surfaces (Light Mode) */
+    --bg: #ffffff;
     --background: #ffffff;
     --surface: #f8fafc;
     --surface-2: #f1f5f9;
     --surface-3: #e2e8f0;
-    --border: rgba(0, 0, 0, 0.08);
+    --border: rgba(15, 23, 42, 0.08);
+    --border-hover: rgba(236, 55, 19, 0.3);
 
-    /* Effects */
+    /* Radii */
     --radius: 12px;
     --radius-lg: 16px;
     --radius-xl: 24px;
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-    --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-    --shadow-hover: 0 15px 45px rgba(236, 55, 19, 0.12); /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #7c3aed, #f43f5e);
-    --gradient-surface: linear-gradient(135deg, #111128, #1a1a38);
-    --gradient-glow: radial-gradient(
-      circle,
-      rgba(124, 58, 237, 0.15) 0%,
-      transparent 70%
-    );
 
     /* Shadows */
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.5);
-    --shadow-glow: 0 0 40px rgba(124, 58, 237, 0.2);
-    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
-    --shadow-card-hover: 0 16px 40px rgba(124, 58, 237, 0.25);
+    --shadow-sm: 0 1px 4px rgba(15, 23, 42, 0.06);
+    --shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+    --shadow-lg: 0 12px 40px rgba(15, 23, 42, 0.12);
+    --shadow-card: 0 2px 12px rgba(15, 23, 42, 0.06);
+    --shadow-card-hover: 0 8px 28px rgba(236, 55, 19, 0.12);
+    --shadow-glow: 0 0 30px rgba(236, 55, 19, 0.15);
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(
+      135deg,
+      var(--primary),
+      var(--primary-light)
+    );
 
     /* Layout */
-    --radius: 14px;
-    --radius-lg: 20px;
-    --radius-xl: 28px;
     --max-w: 1280px;
 
     /* Transitions */
@@ -277,7 +273,7 @@ const {
   }
 
   body {
-    font-family: "Inter", system-ui, sans-serif;
+    font-family: var(--font-sans);
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
@@ -305,7 +301,7 @@ const {
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(15, 15, 23, 0.85);
+    background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
   }
@@ -419,7 +415,7 @@ const {
     position: absolute;
     top: -6px;
     right: -6px;
-    background: var(--accent);
+    background: var(--primary);
     color: white;
     font-size: 0.65rem;
     font-weight: 700;
