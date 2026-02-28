@@ -120,6 +120,22 @@ const { pagination } = meta;
     margin-bottom: 2rem;
   }
 
+  @media (max-width: 640px) {
+    .filters {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .filters::-webkit-scrollbar {
+      display: none;
+    }
+    .filter-chip {
+      flex-shrink: 0;
+    }
+  }
+
   .filter-chip {
     padding: 0.5rem 1.1rem;
     background: var(--surface);
@@ -136,7 +152,7 @@ const { pagination } = meta;
   .filter-chip--active {
     border-color: var(--primary);
     color: var(--primary);
-    background: rgba(99, 102, 241, 0.1);
+    background: var(--primary-glow);
   }
 
   .empty {
