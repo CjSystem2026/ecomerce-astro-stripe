@@ -1,19 +1,22 @@
 ---
-export const prerender = false; // SSR — dinámica por slug
+export const prerender = false;
 
 import MainLayout from "@/layouts/MainLayout.astro";
+import ProductCard from "@/components/ProductCard.astro";
 import {
   getProductBySlug,
   getStrapiImageUrl,
   blocksToPlainText,
+  getFeaturedProducts,
 } from "@/lib/strapi";
 
 const { slug } = Astro.params;
-const product = await getProductBySlug(slug!);
+const [product, related] = await Promise.all([
+  getProductBySlug(slug!),
+  getFeaturedProducts(),
+]);
 
-if (!product) {
-  return Astro.redirect("/404");
-}
+if (!product) return Astro.redirect("/404");
 
 const productImg = Array.isArray(product.imagen)
   ? product.imagen[0]
@@ -27,16 +30,23 @@ const discountPercent = hasDiscount
     )
   : 0;
 const finalPrice = hasDiscount ? product.precioOferta! : product.precio;
+
+// Descripción en texto plano para features
+const descText = blocksToPlainText(product.descripcion);
+
+// Filtrar productos relacionados (sin el actual)
+const relatedProducts = related.filter((p) => p.slug !== slug).slice(0, 4);
 ---
 
 <MainLayout
   title={`${product.nombre} — MiTienda`}
-  description={blocksToPlainText(product.descripcion).slice(0, 160)}
+  description={descText.slice(0, 160)}
   image={imageUrl}
 >
-  <article class="product-detail">
+  <div class="pd-wrapper">
     <div class="container">
-      <nav class="breadcrumb" aria-label="Ruta de navegación">
+      <!-- Breadcrumb -->
+      <nav class="pd-breadcrumb">
         <a href="/">Inicio</a>
         <span>/</span>
         <a href="/productos">Productos</a>
@@ -51,109 +61,145 @@ const finalPrice = hasDiscount ? product.precioOferta! : product.precio;
           )
         }
         <span>/</span>
-        <span aria-current="page">{product.nombre}</span>
+        <span class="current">{product.nombre}</span>
       </nav>
 
-      <div class="product-detail__grid">
-        <!-- Imagen -->
-        <div class="product-detail__gallery">
-          <div class="product-detail__main-image">
+      <!-- Grid principal -->
+      <div class="pd-grid">
+        <!-- IMAGEN -->
+        <div class="pd-gallery">
+          <div class="pd-gallery__main">
             <img
               src={imageUrl}
               alt={productImg?.alternativeText ?? product.nombre}
-              width="600"
-              height="600"
+              width="700"
+              height="700"
             />
-            {
-              hasDiscount && (
-                <span class="badge badge--discount">-{discountPercent}%</span>
-              )
-            }
+            {hasDiscount && <span class="pd-badge">-{discountPercent}%</span>}
           </div>
         </div>
 
-        <!-- Info -->
-        <div class="product-detail__info">
+        <!-- INFO -->
+        <div class="pd-info">
           {
             product.categoria && (
               <a
                 href={`/categorias/${product.categoria.slug}`}
-                class="product-detail__category"
+                class="pd-cat-link"
               >
                 {product.categoria.nombre}
               </a>
             )
           }
 
-          <h1 class="product-detail__title">{product.nombre}</h1>
+          <h1 class="pd-title">{product.nombre}</h1>
+
+          <!-- Rating decorativo (estilo Stitch) -->
+          <div class="pd-rating">
+            <span class="stars">★★★★★</span>
+            <span class="rating-count">4.9 · 128 reseñas</span>
+          </div>
 
           <!-- Precio -->
-          <div class="product-detail__pricing">
-            <span class="price price--main">S/ {finalPrice.toFixed(2)}</span>
+          <div class="pd-price-block">
+            <span class="pd-price">{`S/ ${finalPrice.toFixed(2)}`}</span>
             {
               hasDiscount && (
-                <span class="price price--original">
-                  S/ {product.precio.toFixed(2)}
+                <span class="pd-price-original">{`S/ ${product.precio.toFixed(2)}`}</span>
+              )
+            }
+            {
+              hasDiscount && (
+                <span class="pd-savings">
+                  Ahorras S/ {(product.precio - finalPrice).toFixed(2)}
                 </span>
               )
             }
           </div>
 
+          <div class="pd-divider"></div>
+
           <!-- Descripción -->
-          <div class="product-detail__desc">
+          <div class="pd-desc">
             {
               Array.isArray(product.descripcion) ? (
                 product.descripcion.map((block: any) => (
                   <p>{block.children?.map((c: any) => c.text).join("")}</p>
                 ))
               ) : (
-                <p>
-                  {product.descripcion ||
-                    "Este producto no tiene una descripción disponible."}
-                </p>
+                <p>{product.descripcion || "Sin descripción disponible."}</p>
               )
             }
           </div>
+
+          <!-- Características (estilo Stitch bullet list) -->
+          <div class="pd-features">
+            <ul>
+              <li>✓ Garantía de calidad incluida</li>
+              <li>✓ Envío gratuito a todo Lima</li>
+              <li>✓ Devolución en 30 días</li>
+              <li>✓ Soporte al cliente 24/7</li>
+            </ul>
+          </div>
+
+          <div class="pd-divider"></div>
 
           <!-- Stock -->
-          <div class="product-detail__stock">
+          <div class="pd-stock">
             {
               product.stock > 0 ? (
-                <span class="stock stock--ok">
-                  ✓ En stock ({product.stock} disponibles)
+                <span class="stock-ok">
+                  ● En stock — {product.stock} disponibles
                 </span>
               ) : (
-                <span class="stock stock--out">✗ Sin stock</span>
+                <span class="stock-out">● Sin stock</span>
               )
             }
           </div>
 
-          <!-- Cantidad + Carrito -->
-          <div class="product-detail__actions">
-            <div class="qty-selector">
-              <button
-                class="qty-btn"
-                id="qty-minus"
-                aria-label="Disminuir cantidad">−</button
-              >
+          <!-- Cantidad + Botón (estilo Stitch) -->
+          <div class="pd-actions">
+            <div class="pd-qty">
+              <button class="pd-qty-btn" id="qty-minus" aria-label="Disminuir">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"><path d="M5 12h14"></path></svg
+                >
+              </button>
               <input
                 type="number"
                 id="qty-input"
-                class="qty-input"
+                class="pd-qty-input"
                 value="1"
                 min="1"
                 max={product.stock}
                 readonly
               />
-              <button
-                class="qty-btn"
-                id="qty-plus"
-                aria-label="Aumentar cantidad">+</button
-              >
+              <button class="pd-qty-btn" id="qty-plus" aria-label="Aumentar">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><path d="M12 5v14M5 12h14"></path></svg
+                >
+              </button>
             </div>
 
             <button
-              class="btn-add-cart"
+              class="pd-btn-cart"
               id="add-to-cart"
               data-product-id={product.documentId}
               data-product-name={product.nombre}
@@ -180,33 +226,105 @@ const finalPrice = hasDiscount ? product.precioOferta! : product.precio;
                   d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"
                 ></path>
               </svg>
-              {product.stock > 0 ? "Añadir al carrito" : "Sin stock"}
+              {product.stock > 0 ? "Añadir al Carrito" : "Sin Stock"}
             </button>
+          </div>
+
+          <!-- Trust badges -->
+          <div class="pd-trust">
+            <div class="pd-trust__item">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg
+              >
+              <span>Envío gratis a Lima</span>
+            </div>
+            <div class="pd-trust__item">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
+                ></path></svg
+              >
+              <span>Compra 100% segura</span>
+            </div>
+            <div class="pd-trust__item">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><polyline points="23 4 23 10 17 10"></polyline><path
+                  d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg
+              >
+              <span>Devolución en 30 días</span>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Sección "Completa el look" (estilo Stitch) -->
+      {
+        relatedProducts.length > 0 && (
+          <section class="pd-related">
+            <div class="pd-related__header">
+              <h2>También te puede gustar</h2>
+              <a href="/productos" class="pd-related__link">
+                Ver todo →
+              </a>
+            </div>
+            <div class="pd-related__grid">
+              {relatedProducts.map((p) => (
+                <ProductCard product={p} />
+              ))}
+            </div>
+          </section>
+        )
+      }
     </div>
-  </article>
+  </div>
 </MainLayout>
 
 <script>
   function initProductDetail() {
     const minusBtn = document.getElementById("qty-minus");
     const plusBtn = document.getElementById("qty-plus");
-    const qtyInput = document.getElementById("qty-input") as HTMLInputElement;
+    const qtyInput = document.getElementById(
+      "qty-input",
+    ) as HTMLInputElement | null;
     const addBtn = document.getElementById("add-to-cart");
 
     if (!qtyInput) return;
 
     minusBtn?.addEventListener("click", () => {
-      const current = parseInt(qtyInput.value);
-      if (current > 1) qtyInput.value = String(current - 1);
+      const v = parseInt(qtyInput.value);
+      if (v > 1) qtyInput.value = String(v - 1);
     });
 
     plusBtn?.addEventListener("click", () => {
       const max = parseInt(qtyInput.max) || 99;
-      const current = parseInt(qtyInput.value);
-      if (current < max) qtyInput.value = String(current + 1);
+      const v = parseInt(qtyInput.value);
+      if (v < max) qtyInput.value = String(v + 1);
     });
 
     addBtn?.addEventListener("click", () => {
@@ -230,17 +348,15 @@ const finalPrice = hasDiscount ? product.precioOferta! : product.precio;
       }
 
       localStorage.setItem("cart", JSON.stringify(cart));
-      window.dispatchEvent(new Event("storage")); // Notificar a otros componentes
+      window.dispatchEvent(new Event("storage"));
 
-      // Feedback visual
-      const originalText = addBtn.textContent;
-      addBtn.textContent = `✓ Añadido (${qty})`;
-      addBtn.classList.add("btn-success");
-
+      const orig = addBtn.innerHTML;
+      addBtn.innerHTML = "✓ ¡Añadido al carrito!";
+      addBtn.classList.add("pd-btn-cart--success");
       setTimeout(() => {
         if (addBtn) {
-          addBtn.textContent = originalText;
-          addBtn.classList.remove("btn-success");
+          addBtn.innerHTML = orig;
+          addBtn.classList.remove("pd-btn-cart--success");
         }
       }, 2000);
     });
@@ -250,200 +366,331 @@ const finalPrice = hasDiscount ? product.precioOferta! : product.precio;
 </script>
 
 <style>
-  .product-detail {
+  .pd-wrapper {
     padding: 2rem 0 5rem;
   }
 
-  .breadcrumb {
+  /* Breadcrumb */
+  .pd-breadcrumb {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 2.5rem;
-    font-size: 0.85rem;
+    gap: 0.4rem;
+    font-size: 0.82rem;
     color: var(--text-muted);
+    margin-bottom: 2.5rem;
     flex-wrap: wrap;
   }
-
-  .breadcrumb a {
+  .pd-breadcrumb a {
     color: var(--text-muted);
     text-decoration: none;
+    transition: color 0.2s;
   }
-  .breadcrumb a:hover {
+  .pd-breadcrumb a:hover {
     color: var(--primary);
   }
-  .breadcrumb span[aria-current] {
+  .pd-breadcrumb .current {
     color: var(--text);
+    font-weight: 500;
   }
 
-  .product-detail__grid {
+  /* Grid */
+  .pd-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4rem;
     align-items: start;
+    margin-bottom: 5rem;
   }
 
-  .product-detail__main-image {
+  /* Galería */
+  .pd-gallery__main {
     position: relative;
-    border-radius: 20px;
+    border-radius: var(--radius-xl);
     overflow: hidden;
-    background: var(--surface);
     border: 1px solid var(--border);
+    background: var(--surface);
     aspect-ratio: 1;
+    box-shadow: var(--shadow);
   }
-
-  .product-detail__main-image img {
+  .pd-gallery__main img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
-
-  .badge {
+  .pd-badge {
     position: absolute;
     top: 16px;
     left: 16px;
-    padding: 6px 14px;
-    border-radius: 999px;
+    background: var(--primary);
+    color: white;
     font-size: 0.8rem;
     font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(236, 55, 19, 0.3);
   }
 
-  .badge--discount {
-    background: var(--accent);
-    color: white;
-  }
-
-  .product-detail__category {
+  /* Info */
+  .pd-cat-link {
     display: inline-block;
-    color: var(--primary);
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.78rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
+    color: var(--primary);
     text-decoration: none;
     margin-bottom: 0.75rem;
   }
 
-  .product-detail__title {
-    font-size: clamp(1.5rem, 3vw, 2.25rem);
+  .pd-title {
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
     font-weight: 800;
-    line-height: 1.2;
-    margin-bottom: 1.25rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.75rem;
   }
 
-  .product-detail__pricing {
+  /* Rating */
+  .pd-rating {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .stars {
+    color: #f59e0b;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+  }
+  .rating-count {
+    font-size: 0.82rem;
+    color: var(--text-muted);
   }
 
-  .price--main {
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--primary);
+  /* Precio */
+  .pd-price-block {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
   }
-  .price--original {
+  .pd-price {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--primary);
+    letter-spacing: -0.03em;
+  }
+  .pd-price-original {
     font-size: 1.1rem;
     color: var(--text-muted);
     text-decoration: line-through;
   }
+  .pd-savings {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #16a34a;
+    background: rgba(22, 163, 74, 0.1);
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
 
-  .product-detail__desc {
+  .pd-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1.25rem 0;
+  }
+
+  /* Descripción */
+  .pd-desc {
     color: var(--text-muted);
     line-height: 1.8;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .pd-desc p + p {
+    margin-top: 0.5rem;
   }
 
-  .product-detail__stock {
-    margin-bottom: 1.5rem;
+  /* Features */
+  .pd-features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
-  .stock {
-    font-size: 0.9rem;
+  .pd-features li {
+    font-size: 0.88rem;
+    color: var(--text-muted);
     font-weight: 500;
   }
-  .stock--ok {
-    color: #4ade80;
+
+  /* Stock */
+  .pd-stock {
+    margin-bottom: 1.5rem;
+    font-size: 0.88rem;
+    font-weight: 600;
   }
-  .stock--out {
-    color: var(--accent);
+  .stock-ok {
+    color: #16a34a;
+  }
+  .stock-out {
+    color: #ef4444;
   }
 
-  .product-detail__actions {
+  /* Acciones */
+  .pd-actions {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
     align-items: center;
+    margin-bottom: 1.5rem;
     flex-wrap: wrap;
   }
 
-  .qty-selector {
+  .pd-qty {
     display: flex;
     align-items: center;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-  }
-
-  .qty-btn {
-    background: none;
-    border: none;
-    color: var(--text);
-    font-size: 1.25rem;
-    width: 40px;
-    height: 48px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-
-  .qty-btn:hover {
     background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    border-radius: 999px;
+    padding: 4px;
+    gap: 2px;
   }
-
-  .qty-input {
-    width: 50px;
-    height: 48px;
+  .pd-qty-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .pd-qty-btn:hover {
+    background: var(--surface-3);
+    color: var(--text);
+  }
+  .pd-qty-input {
+    width: 40px;
     text-align: center;
     background: none;
     border: none;
     color: var(--text);
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
     -moz-appearance: textfield;
   }
+  .pd-qty-input::-webkit-outer-spin-button,
+  .pd-qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
 
-  .btn-add-cart {
+  .pd-btn-cart {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.6rem;
-    padding: 0.9rem 1.75rem;
+    padding: 1rem 1.75rem;
     background: var(--primary);
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: var(--radius);
     font-size: 1rem;
     font-weight: 700;
+    font-family: var(--font-sans);
     cursor: pointer;
-    transition:
-      background 0.2s,
-      transform 0.1s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 20px rgba(236, 55, 19, 0.2);
     min-width: 200px;
   }
-
-  .btn-add-cart:hover:not(:disabled) {
-    background: var(--primary-dark);
-    transform: translateY(-1px);
+  .pd-btn-cart:hover:not(:disabled) {
+    background: var(--primary-light);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(236, 55, 19, 0.3);
   }
-  .btn-add-cart:disabled {
+  .pd-btn-cart:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
+  .pd-btn-cart--success {
+    background: #16a34a;
+    box-shadow: 0 8px 20px rgba(22, 163, 74, 0.2);
+  }
 
-  @media (max-width: 768px) {
-    .product-detail__grid {
+  /* Trust badges */
+  .pd-trust {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .pd-trust__item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .pd-trust__item svg {
+    color: var(--primary);
+    flex-shrink: 0;
+  }
+
+  /* Sección relacionados */
+  .pd-related {
+    margin-top: 1rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+  }
+  .pd-related__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+  .pd-related__header h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+  }
+  .pd-related__link {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary);
+    text-decoration: none;
+  }
+  .pd-related__link:hover {
+    opacity: 0.8;
+  }
+  .pd-related__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .pd-grid {
       grid-template-columns: 1fr;
       gap: 2rem;
+    }
+    .pd-related__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 480px) {
+    .pd-related__grid {
+      grid-template-columns: 1fr;
+    }
+    .pd-actions {
+      flex-direction: column;
+    }
+    .pd-btn-cart {
+      width: 100%;
     }
   }
 </style>
